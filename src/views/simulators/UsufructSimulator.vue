@@ -1,6 +1,7 @@
 <script lang="ts">
 import MInputNumber from '@/components/MInputNumber.vue';
 import MainAdsenseBottom from '@/components/MainAdsenseBottom.vue';
+import { calculateUsufruct } from '@/utils/UsufructSimulatorFunctions';
 
 export default {
     name: 'UsufructSimulator',
@@ -33,10 +34,7 @@ export default {
     },
     methods: {
         calculate() {
-            const profitability = this.profitability.option.name === 'a.m.' ? (this.profitability.value as number) / 100 : this.convertTaxeToMonthly(this.profitability.value as number);
-            const result = Math.floor(Math.log((this.monthlyWithdrawal as number) / ((this.monthlyWithdrawal as number) - (this.equity as number) * profitability)) / Math.log(1 + profitability));
-
-            this.resultSimulation = isNaN(result) || result === Infinity || result > 1200 ? 'Pelo resto da vida' : this.formatYearsAndMonths(result);
+            this.resultSimulation = calculateUsufruct(this.profitability, this.equity, this.monthlyWithdrawal);
         },
         clearFields() {
             this.equity = 0;
@@ -46,17 +44,6 @@ export default {
             };
             this.monthlyWithdrawal = 0;
             this.resultSimulation = 0;
-        },
-        // função que transforma meses em anos e meses
-        formatYearsAndMonths(months: number) {
-            const years = Math.floor(months / 12);
-            const remainingMonths = months % 12;
-            if (years === 0) return `${remainingMonths} m${remainingMonths > 1 ? 'e' : 'ê'}s${remainingMonths > 1 ? 'es' : ''}`;
-            if (remainingMonths === 0) return `${years} ano${years > 1 ? 's' : ''}`;
-            return `${years} ano${years > 1 ? 's' : ''} e ${remainingMonths} m${remainingMonths > 1 ? 'e' : 'ê'}s${remainingMonths > 1 ? 'es' : ''}`;
-        },
-        convertTaxeToMonthly(taxe: number) {
-            return Math.pow(1 + taxe / 100, 1 / 12) - 1;
         }
     }
 };
