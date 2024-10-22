@@ -35,6 +35,9 @@ export default {
     methods: {
         calculate() {
             this.resultSimulation = calculateUsufruct(this.profitability, this.equity, this.monthlyWithdrawal);
+            if (this.equity < this.monthlyWithdrawal) {
+                this.$toast.add({ severity: 'warn', summary: 'Atenção!', detail: 'O valor do patrimônio informado é insuficiente para cobrir a retirada mensal desejada.', life: 5000 });
+            };
         },
         clearFields() {
             this.equity = 0;
